@@ -1,0 +1,158 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply bg-base text-ink font-body antialiased;
+  }
+
+  ::selection {
+    @apply bg-neon-purple/40 text-ink;
+  }
+
+  /* Foco visible para accesibilidad de teclado, sin depender del outline por defecto */
+  :focus-visible {
+    outline: 2px solid theme("colors.neon.green");
+    outline-offset: 3px;
+  }
+
+  /* Grano de película sobre todo el sitio: la textura que separa un diseño
+     premium de un fondo plano generado por plantilla. Muy sutil (5% opacidad,
+     mix-blend overlay) para que no se note como "efecto", solo como profundidad. */
+  body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: 100;
+    pointer-events: none;
+    opacity: 0.05;
+    mix-blend-mode: overlay;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+}
+
+@layer utilities {
+  /* Texto con glow neón, reservado para momentos puntuales (kicker del hero,
+     palabras clave), nunca para bloques grandes de texto */
+  .text-glow-green {
+    text-shadow: 0 0 20px rgba(57, 255, 136, 0.5);
+  }
+  .text-glow-purple {
+    text-shadow: 0 0 20px rgba(184, 77, 255, 0.5);
+  }
+
+  /* Tipografía fluida: escala continua entre mobile y desktop en vez de
+     saltos bruscos por breakpoint (clamp = mínimo, preferido en vw, máximo) */
+  .fluid-h1 {
+    font-size: clamp(2.25rem, 1.4rem + 4.2vw, 5.5rem);
+    line-height: 1.05;
+  }
+  .fluid-h2 {
+    font-size: clamp(1.85rem, 1.3rem + 2.4vw, 3.4rem);
+    line-height: 1.1;
+  }
+  .fluid-eyebrow {
+    letter-spacing: 0.32em;
+  }
+
+  /* Rayita decorativa antes de los "eyebrows" (kickers) — un detalle
+     editorial que marca la etiqueta como jerarquía secundaria */
+  .eyebrow-rule {
+    display: inline-block;
+    width: 28px;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, theme("colors.neon.green"));
+    vertical-align: middle;
+    margin-right: 12px;
+  }
+
+  /* Divisor de sección: línea degradada morado→verde en vez de un corte seco */
+  .divider-gradient {
+    height: 1px;
+    background: linear-gradient(
+      90deg,
+      transparent,
+      rgba(184, 77, 255, 0.5),
+      rgba(57, 255, 136, 0.5),
+      transparent
+    );
+  }
+
+  /* Sheen de luz en botones: barrido diagonal al hover, look de superficie
+     pulida en vez de solo un cambio de color plano */
+  .btn-sheen {
+    position: relative;
+    overflow: hidden;
+    isolation: isolate;
+  }
+  .btn-sheen::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    background: linear-gradient(
+      115deg,
+      transparent 30%,
+      rgba(255, 255, 255, 0.35) 50%,
+      transparent 70%
+    );
+    transform: translateX(-120%);
+    transition: transform 0.65s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .btn-sheen:hover::before {
+    transform: translateX(120%);
+  }
+  .btn-sheen > * {
+    position: relative;
+    z-index: 2;
+  }
+
+  /* Numeral fantasma detrás de las cards de década — técnica editorial de
+     tipografía gigante translúcida, le da a cada card una identidad propia */
+  .decade-ghost {
+    position: absolute;
+    right: -0.15em;
+    top: -0.28em;
+    font-size: 7.5rem;
+    font-weight: 800;
+    line-height: 1;
+    opacity: 0.06;
+    pointer-events: none;
+    user-select: none;
+  }
+
+  /* Animación "tick" del countdown: cada dígito entra con un pequeño golpe
+     de escala + blur, más cercano a un marcador digital real que a un fade plano */
+  @keyframes tick {
+    from {
+      opacity: 0;
+      transform: translateY(10px) scale(0.94);
+      filter: blur(2px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+      filter: blur(0);
+    }
+  }
+  .animate-tick {
+    animation: tick 0.45s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  /* Respeta la preferencia de movimiento reducido del usuario */
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+}
