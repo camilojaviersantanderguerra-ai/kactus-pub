@@ -1,4 +1,4 @@
-import { Instagram, Facebook, Mail, MessageCircle, MapPin, Clock } from "lucide-react";
+import { Instagram, Facebook, Mail, MessageCircle, Music2, MapPin, Clock } from "lucide-react";
 import { Logo } from "@/components/ui/Logo";
 import { mainNav } from "@/data/navigation";
 import { contacto } from "@/data/contacto";
@@ -9,6 +9,7 @@ const iconMap: Record<SocialIcon, typeof Instagram> = {
   instagram: Instagram,
   facebook: Facebook,
   whatsapp: MessageCircle, // Lucide no incluye el ícono de marca de WhatsApp
+  tiktok: Music2, // Lucide tampoco incluye el ícono de marca de TikTok
   mail: Mail,
 };
 
@@ -31,7 +32,7 @@ export function Footer() {
             Navegación
           </span>
           {mainNav.map((link) => (
-            <a
+            
               key={link.href}
               href={link.href}
               className="font-body text-sm text-ink-muted transition-colors hover:text-neon-green"
@@ -49,7 +50,7 @@ export function Footer() {
             <Clock size={16} className="mt-0.5 shrink-0" />
             <span>{contacto.schedule}</span>
           </div>
-          <a
+          
             href={contacto.mapsUrl}
             target="_blank"
             rel="noopener noreferrer"
@@ -68,7 +69,7 @@ export function Footer() {
             {redes.map((red) => {
               const Icon = iconMap[red.icon];
               return (
-                <a
+                
                   key={red.label}
                   href={red.href}
                   target={red.href.startsWith("http") ? "_blank" : undefined}
