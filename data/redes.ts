@@ -1,6 +1,6 @@
 import { whatsappHref } from "./contacto";
 
-export type SocialIcon = "instagram" | "facebook" | "whatsapp" | "mail";
+export type SocialIcon = "instagram" | "facebook" | "whatsapp" | "mail" | "tiktok";
 
 export interface SocialLink {
   label: string;
@@ -14,7 +14,20 @@ export interface SocialLink {
  */
 export const redes: SocialLink[] = [
   { label: "WhatsApp", href: whatsappHref, icon: "whatsapp" },
-  { label: "Instagram", href: "https://www.instagram.com/kactusiqq?igsh=MW1wbmlveXdxcGNvaQ==", icon: "instagram" },
-  { label: "Facebook", href: "https://www.facebook.com/share/18bv5hsTGL/?mibextid=wwXIfr", icon: "facebook" },
-  { label: "Correo electrónico", href: "mailto:clubkactuslimitada@gmail.com", icon: "mail" },
+  {
+    label: "Instagram",
+    href: "https://www.instagram.com/kactusiqq?igsh=MW1wbmlveXdxcGNvaQ==",
+    icon: "instagram",
+  },
+  {
+    label: "Facebook",
+    href: "https://www.facebook.com/share/18bv5hsTGL/?mibextid=wwXIfr",
+    icon: "facebook",
+  },
+  { label: "TikTok", href: "https://www.tiktok.com/@kactuspubdiscoteq", icon: "tiktok" },
+  {
+    label: "Correo electrónico",
+    href: "mailto:clubkactuslimitada@gmail.com",
+    icon: "mail",
+  },
 ];
