@@ -15,12 +15,12 @@ export interface ContactInfo {
 }
 
 export const contacto: ContactInfo = {
-  whatsappNumber: "56900000000",
+  whatsappNumber: "56920245353",
   whatsappMessage: "Hola, quiero reservar una mesa para el sábado",
-  email: "contacto@kactuspub.cl",
+  email: "clubkactuslimitada@gmail.com",
   address: "Iquique, Chile",
-  mapsUrl: "https://maps.google.com/?q=Kactus+Pub+Iquique",
-  schedule: "Sábados — 23:00 a 05:00",
+  mapsUrl: "https://maps.app.goo.gl/pBHSDLpwFAkco3aJ9?g_st=iwb",
+  schedule: "Sábados — 23:00 a 04:30",
 };
 
 /** Link de WhatsApp ya armado con el mensaje precargado, listo para usar en un <a href> */
