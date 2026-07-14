@@ -28,7 +28,6 @@ const iconMap: Record<BeneficioIcon, typeof Volume2> = {
   seguridad: ShieldCheck,
 };
 
-/** Mismo trío de acentos usado en toda la página, en un ciclo de 3 para dar ritmo visual sin depender de un significado por color */
 const accentCycle = [
   { text: "text-neon-purple", border: "hover:border-neon-purple/45" },
   { text: "text-neon-green", border: "hover:border-neon-green/45" },
@@ -45,12 +44,6 @@ const gridContainer = {
   show: { transition: { staggerChildren: 0.08 } },
 };
 
-/**
- * Sección "Por qué elegir Kactus": grid de 9 beneficios con ícono, en tarjetas
- * simples (sin numeral fantasma, esa firma queda reservada para las décadas
- * de Eventos). El color de acento cicla morado→verde→dorado por posición,
- * dando ritmo visual sin necesitar significado semántico por color.
- */
 export function PorQueElegir() {
   return (
     <section id="porque-elegir" className="bg-base py-24 sm:py-32">
