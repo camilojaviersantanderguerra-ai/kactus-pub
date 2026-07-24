@@ -1,104 +1,118 @@
-import type { Metadata } from "next";
-import { displayFont, bodyFont, monoFont } from "@/lib/fonts";
-import { Header } from "@/components/layout/Header";
-import { Footer } from "@/components/layout/Footer";
-import { contacto } from "@/data/contacto";
-import { empresa } from "@/data/empresa";
-import { redes } from "@/data/redes";
-import "./globals.css";
+import type { Metadata, Viewport } from "next";
+import { Inter, Fraunces, JetBrains_Mono } from "next/font/google";
+import "@/styles/globals.css";
+import { Header } from "@/components/Header";
+import { Footer } from "@/components/Footer";
+import { CartProvider } from "@/components/CartProvider";
+import { CartDrawer } from "@/components/CartDrawer";
+import { siteConfig } from "@/data/site-config";
+import { getAllCategoryNames } from "@/utils/catalog";
+import { getCurrentCart } from "@/lib/actions/cart";
 
+// Carga de fuentes optimizada por next/font (self-hosted, sin bloqueo de render).
+const inter = Inter({ subsets: ["latin"], variable: "--font-sans", display: "swap" });
+const fraunces = Fraunces({
+  subsets: ["latin"],
+  variable: "--font-display",
+  weight: ["300", "400", "500", "600"],
+  display: "swap",
+});
+const mono = JetBrains_Mono({ subsets: ["latin"], variable: "--font-mono", display: "swap" });
+
+const siteUrl = "https://www.santander-e.cl";
+
+// SEO completo: metadata base, Open Graph y Twitter Cards centralizados.
+// Cada página puede sobreescribir campos específicos con `generateMetadata`.
 export const metadata: Metadata = {
-  metadataBase: new URL("https://kactuspub.cl"),
+  metadataBase: new URL(siteUrl),
   title: {
-    default: "Kactus Pub — La casa de los 80's, 90's y 2000's | Iquique",
-    template: "%s | Kactus Pub",
+    default: `${siteConfig.brand.name} — ${siteConfig.brand.tagline}`,
+    template: `%s · ${siteConfig.brand.name}`,
   },
   description:
-    "Kactus Pub, Iquique: pub temático de música 80's, 90's y 2000's. Reserva tu mesa para los sábados o arrienda el local para tu evento privado o corporativo.",
+    "Tienda premium de productos virales cuidadosamente seleccionados: tecnología, hogar, fitness, viajes y más. Envío express, pago seguro y garantía en cada pedido.",
+  keywords: [
+    "ecommerce premium",
+    "tienda online",
+    "productos virales",
+    "tecnología",
+    "hogar",
+    "fitness",
+    "Santander E-Shopping",
+  ],
+  authors: [{ name: siteConfig.brand.name }],
+  creator: siteConfig.brand.name,
+  // NOTA: el canonical NO se fija aquí a nivel global — cada página define el
+  // suyo propio (ver `alternates: { canonical: ... }` en cada page.tsx). Antes
+  // había un canonical fijo a "/" en este layout raíz, y como Next.js hereda
+  // metadata del layout a menos que la página la sobreescriba, TODAS las
+  // páginas (incluidas fichas de producto y /tienda) declaraban su canonical
+  // como el home — Google las trataba como "duplicado del home" y no las
+  // indexaba por separado. Bug crítico de SEO, corregido.
   openGraph: {
-    title: "Kactus Pub — Iquique",
-    description:
-      "La casa de la mejor música de los 80's, 90's y 2000's. Todos los sábados en Iquique.",
-    url: "https://kactuspub.cl",
-    siteName: "Kactus Pub",
-    locale: "es_CL",
     type: "website",
-    images: [
-      {
-        url: "/og-image.jpg",
-        width: 1200,
-        height: 630,
-        alt: "Kactus Pub — Iquique",
-      },
-    ],
+    // Antes decía "es_MX" (español de México) en una tienda que solo vende
+    // y despacha en Chile — corregido a "es_CL".
+    locale: "es_CL",
+    url: siteUrl,
+    siteName: siteConfig.brand.name,
+    title: `${siteConfig.brand.name} — ${siteConfig.brand.tagline}`,
+    description:
+      "Una selección curada de los productos más deseados del mundo, entregados con un nivel de detalle excepcional.",
+    images: [{ url: siteConfig.brand.logoPath, width: 1200, height: 630, alt: siteConfig.brand.name }],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Kactus Pub — Iquique",
-    description:
-      "La casa de la mejor música de los 80's, 90's y 2000's. Todos los sábados en Iquique.",
-    images: ["/og-image.jpg"],
+    title: siteConfig.brand.name,
+    description: siteConfig.brand.tagline,
+    images: [siteConfig.brand.logoPath],
   },
+  robots: { index: true, follow: true },
+  icons: { icon: "/favicon.svg" },
 };
 
-/**
- * Datos estructurados Schema.org (JSON-LD), tipo NightClub — le confirma a
- * Google qué tipo de negocio es, su horario y sus redes, para que aparezca
- * mejor en resultados de búsqueda (rich snippets, Google Maps, etc.).
- * Se arma dinámicamente desde data/contacto.ts, data/empresa.ts y
- * data/redes.ts — nunca hay que editar este archivo a mano para esto.
- */
-function StructuredData() {
+export const viewport: Viewport = {
+  themeColor: "#050506",
+  width: "device-width",
+  initialScale: 1,
+};
+
+export default async function RootLayout({ children }: { children: React.ReactNode }) {
+  const categories = await getAllCategoryNames();
+  // Carrito real: se obtiene server-side a partir de la cookie (si existe)
+  // para hidratar el CartProvider con el estado verdadero desde el primer
+  // render — así el ícono del carrito no parpadea en 0 al recargar la
+  // página con productos ya agregados.
+  const initialCart = await getCurrentCart().catch(() => null);
+
+  // Schema.org (Organization) — ayuda a Google a entender la marca desde el día uno.
   const jsonLd = {
     "@context": "https://schema.org",
-    "@type": "NightClub",
-    name: empresa.nombre,
-    description: empresa.tagline,
-    image: "https://kactuspub.cl/og-image.jpg",
-    url: "https://kactuspub.cl",
-    telephone: `+${contacto.whatsappNumber}`,
-    email: contacto.email,
-    address: {
-      "@type": "PostalAddress",
-      addressLocality: "Iquique",
-      addressCountry: "CL",
+    "@type": "Organization",
+    name: siteConfig.brand.name,
+    url: siteUrl,
+    logo: `${siteUrl}${siteConfig.brand.logoPath}`,
+    sameAs: [],
+    contactPoint: {
+      "@type": "ContactPoint",
+      email: siteConfig.contact.email,
+      contactType: "customer service",
     },
-    openingHoursSpecification: {
-      "@type": "OpeningHoursSpecification",
-      dayOfWeek: contacto.scheduleSchema.dayOfWeek,
-      opens: contacto.scheduleSchema.opens,
-      closes: contacto.scheduleSchema.closes,
-    },
-    sameAs: redes
-      .filter((r) => r.href.startsWith("http"))
-      .map((r) => r.href),
   };
 
   return (
-    <script
-      type="application/ld+json"
-      dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-    />
-  );
-}
-
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
-  return (
-    <html
-      lang="es"
-      className={`${displayFont.variable} ${bodyFont.variable} ${monoFont.variable}`}
-    >
-      <head>
-        <StructuredData />
-      </head>
-      <body>
-        <Header />
-        <main>{children}</main>
-        <Footer />
+    <html lang="es" className={`${inter.variable} ${fraunces.variable} ${mono.variable}`}>
+      <body className="font-sans antialiased">
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        />
+        <CartProvider initialCart={initialCart}>
+          <Header categories={categories} />
+          <main>{children}</main>
+          <Footer />
+          <CartDrawer />
+        </CartProvider>
       </body>
     </html>
   );
